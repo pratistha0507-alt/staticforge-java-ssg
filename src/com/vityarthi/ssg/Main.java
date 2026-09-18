@@ -5,45 +5,49 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        SiteBuilder builder = new SiteBuilder("posts", "site");
-        Scanner sc = new Scanner(System.in);
-        System.out.println("=================================================");
-        System.out.println("   StaticForge: CLI Static Site Generator        ");
-        System.out.println("=================================================");
+        // initialize the core site generator engine with folder paths
+        SiteBuilder engine = new SiteBuilder("posts", "site");
+        Scanner input = new Scanner(System.in);
 
-        while (true) {
-            System.out.println("\nSelect an action:");
-            System.out.println("1. Build Site (Parse Markdown to HTML)");
+        System.out.println("==================================================");
+        System.out.println("  StaticForge: Terminal Static Site Generator     ");
+        System.out.println("==================================================");
+
+        boolean running = true;
+        while (running) {
+            System.out.println("\nDashboard Options:");
+            System.out.println("1. Generate Static Site from Markdown");
             System.out.println("2. Search Articles by Keyword");
-            System.out.println("3. Show Site Statistics");
-            System.out.println("4. Exit");
-            System.out.print("Enter choice (1-4): ");
+            System.out.println("3. Show Total Articles Count");
+            System.out.println("4. Exit Program");
+            System.out.print("Select an option (1-4): ");
 
-            String choice = sc.nextLine().trim();
+            String option = input.nextLine().trim();
             try {
-                switch (choice) {
+                switch (option) {
                     case "1":
-                        builder.build();
-                        System.out.println("[SUCCESS] Generated static website in the 'site/' directory!");
+                        engine.build();
+                        System.out.println("[OK] Website compiled successfully in '/site' folder!");
                         break;
                     case "2":
-                        System.out.print("Enter search term: ");
-                        String query = sc.nextLine();
-                        List<Article> results = builder.search(query);
-                        System.out.println("Found " + results.size() + " matches:");
-                        results.forEach(r -> System.out.println(" - " + r.getTitle() + " (" + r.getHtmlFilename() + ")"));
+                        System.out.print("Enter search keyword: ");
+                        String query = input.nextLine();
+                        List<Article> matches = engine.search(query);
+                        System.out.println("Found " + matches.size() + " matching document(s):");
+                        matches.forEach(item -> System.out.println(" -> " + item.getTitle() + " (" + item.getHtmlFilename() + ")"));
                         break;
                     case "3":
-                        System.out.println("Total articles indexed: " + builder.getArticleCount());
+                        System.out.println("Current indexed article count: " + engine.getArticleCount());
                         break;
                     case "4":
-                        System.out.println("Exiting StaticForge. Goodbye!");
-                        return;
+                        System.out.println("Shutting down StaticForge. Goodbye!");
+                        running = false;
+                        break;
                     default:
-                        System.out.println("Invalid option. Please choose between 1 and 4.");
+                        System.out.println("Notice: Please enter a valid number (1 to 4).");
                 }
-            } catch (Exception e) {
-                System.out.println("[ERROR] An issue occurred: " + e.getMessage());
+            } catch (Exception err) {
+                System.out.println("[Exception Caught] Error details: " + err.getMessage());
             }
         }
     }
